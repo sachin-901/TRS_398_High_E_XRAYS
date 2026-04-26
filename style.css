@@ -26,9 +26,7 @@ body {
     font-size: 16px;
 }
 
-.btn:hover {
-    background-color: #004494;
-}
+.btn:hover { background-color: #004494; }
 
 .container {
     max-width: 900px;
@@ -46,20 +44,10 @@ header {
     margin-bottom: 30px;
 }
 
-header h1 {
-    margin: 0 0 10px 0;
-    font-size: 24px;
-    color: #0056b3;
-}
+header h1 { margin: 0 0 10px 0; font-size: 24px; color: #0056b3; }
+header p { margin: 0; color: #666; }
 
-header p {
-    margin: 0;
-    color: #666;
-}
-
-.worksheet-section {
-    margin-bottom: 30px;
-}
+.worksheet-section { margin-bottom: 30px; }
 
 .worksheet-section h2 {
     font-size: 18px;
@@ -69,11 +57,7 @@ header p {
     margin-bottom: 15px;
 }
 
-.subsection h3 {
-    font-size: 15px;
-    color: #444;
-    margin-bottom: 10px;
-}
+.subsection h3 { font-size: 15px; color: #444; margin-bottom: 10px; }
 
 .info-grid {
     display: grid;
@@ -82,27 +66,59 @@ header p {
     margin-bottom: 15px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
+.form-group { display: flex; flex-direction: column; }
+.form-group label { font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
+.form-group input, .form-group select { padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 14px; }
 
-.form-group label {
+.input-with-unit {
+    display: flex;
+    gap: 5px;
+}
+.input-with-unit input { flex: 1; }
+.input-with-unit select { width: 80px; }
+
+/* 3-Reading Input Styling */
+.reading-group {
+    background: #fafafa;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+}
+.reading-group label {
     font-size: 13px;
     font-weight: bold;
-    margin-bottom: 5px;
     color: #555;
+    min-width: 180px;
 }
-
-.form-group input, .form-group select {
-    padding: 8px;
+.reading-inputs {
+    display: flex;
+    gap: 5px;
+}
+.reading-inputs input {
+    width: 80px;
+    padding: 6px;
     border: 1px solid #ccc;
     border-radius: 3px;
+    text-align: center;
+}
+.avg-display {
+    font-weight: bold;
+    color: #0056b3;
     font-size: 14px;
 }
 
-.form-group input[readonly] {
-    background-color: #f9f9f9;
+.coeff-display {
+    font-size: 13px;
+    background: #eef2f5;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    color: #444;
 }
 
 .calc-result {
@@ -122,28 +138,27 @@ header p {
     border: 1px solid #c8d9e6;
     margin-top: 20px;
 }
+.summary-box p { font-size: 18px; margin: 10px 0; }
+.summary-box .formula { font-size: 13px; color: #666; font-family: monospace; }
+.highlight { font-weight: bold; color: #d9534f; font-size: 22px; }
 
-.summary-box p {
-    font-size: 18px;
-    margin: 10px 0;
-}
-
-.summary-box .formula {
-    font-size: 13px;
-    color: #666;
-    font-family: monospace;
-}
-
-.highlight {
-    font-weight: bold;
-    color: #d9534f;
-    font-size: 22px;
-}
-
-/* Print Specific Rules */
+/* Print Specific Rules for Clean PDF Generation */
 @media print {
     body { background-color: #fff; }
     .toolbar { display: none; }
     .container { box-shadow: none; border: none; padding: 0; }
-    input, select { border: none; background: transparent; border-bottom: 1px solid #000; border-radius: 0; }
+    
+    /* Remove ALL borders and backgrounds for inputs/selects on print */
+    input, select { 
+        border: none !important; 
+        background: transparent !important; 
+        border-radius: 0;
+        padding: 0;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    .reading-group { border: none; background: transparent; padding: 5px 0; }
+    .calc-result, .summary-box, .coeff-display { background: transparent; border: 1px solid #ccc; }
 }
