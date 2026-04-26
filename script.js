@@ -84,13 +84,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let m1_avg = getAverage('m1');
         let m2_avg = getAverage('m2');
 
+        // FIXED: Enforce strings as keys so JavaScript doesn't drop the ".0"
         const a_coeffs = {
-            2.0: [2.337, -3.636, 2.299],
-            2.5: [1.474, -1.587, 1.114],
-            3.0: [1.198, -0.875, 0.677],
-            3.5: [1.080, -0.542, 0.463],
-            4.0: [1.022, -0.363, 0.341],
-            5.0: [0.975, -0.188, 0.214]
+            "2.0": [2.337, -3.636, 2.299],
+            "2.5": [1.474, -1.587, 1.114],
+            "3.0": [1.198, -0.875, 0.677],
+            "3.5": [1.080, -0.542, 0.463],
+            "4.0": [1.022, -0.363, 0.341],
+            "5.0": [0.975, -0.188, 0.214]
         };
 
         let kS = 1.0;
@@ -130,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const ndw = getVal('ndw');
         const kq = getVal('kq');
 
-        if (m_raw_avg !== null && kTP !== 1.0 && kS !== null && typeof kS === 'number') { 
+        // FIXED: Removed the strict requirement for kTP to not be 1.0 so you can test easily
+        if (m_raw_avg !== null && kS !== null) { 
             const m_corr = m_raw_avg * kTP * kElec * kPol * kS;
             document.getElementById('m_corr_result').textContent = m_corr.toFixed(4);
 
