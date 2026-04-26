@@ -1,0 +1,149 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f7f6;
+    color: #333;
+    padding: 20px;
+    margin: 0;
+}
+
+.toolbar {
+    max-width: 900px;
+    margin: 0 auto 20px auto;
+    text-align: right;
+}
+
+.btn {
+    background-color: #0056b3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #004494;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-top: 5px solid #0056b3;
+}
+
+header {
+    text-align: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    color: #0056b3;
+}
+
+header p {
+    margin: 0;
+    color: #666;
+}
+
+.worksheet-section {
+    margin-bottom: 30px;
+}
+
+.worksheet-section h2 {
+    font-size: 18px;
+    background-color: #eef2f5;
+    padding: 8px 12px;
+    border-left: 4px solid #0056b3;
+    margin-bottom: 15px;
+}
+
+.subsection h3 {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group input, .form-group select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.form-group input[readonly] {
+    background-color: #f9f9f9;
+}
+
+.calc-result {
+    font-weight: bold;
+    color: #0056b3;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    text-align: right;
+}
+
+.summary-box {
+    background-color: #eef2f5;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #c8d9e6;
+    margin-top: 20px;
+}
+
+.summary-box p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.summary-box .formula {
+    font-size: 13px;
+    color: #666;
+    font-family: monospace;
+}
+
+.highlight {
+    font-weight: bold;
+    color: #d9534f;
+    font-size: 22px;
+}
+
+/* Print Specific Rules */
+@media print {
+    body { background-color: #fff; }
+    .toolbar { display: none; }
+    .container { box-shadow: none; border: none; padding: 0; }
+    input, select { border: none; background: transparent; border-bottom: 1px solid #000; border-radius: 0; }
+}
