@@ -15,7 +15,7 @@
     <div id="worksheet" class="container">
         <header>
             <h1>Absorbed Dose to Water: High Energy Photon Beams</h1>
-            <p>Based on IAEA TRS-398 (updated) (Chapter 6)</p>
+            <p>Based on IAEA TRS-398 (Chapter 6)</p>
         </header>
 
         <section class="info-grid">
@@ -26,9 +26,17 @@
         </section>
 
         <section class="worksheet-section">
-            <h2>1. Reference Conditions (Table 15)</h2>
+            <h2>1. Reference Conditions</h2>
             <div class="info-grid">
-                <div class="form-group"><label>Phantom Material:</label><input type="text" value="Water" readonly></div>
+                <div class="form-group">
+                    <label>Phantom Material:</label>
+                    <select id="phantomSelect">
+                        <option value="Water">Water</option>
+                        <option value="Slabs">Slabs</option>
+                        <option value="Other">Other...</option>
+                    </select>
+                    <input type="text" id="phantomOther" placeholder="Specify..." style="display:none; margin-top:5px;">
+                </div>
                 <div class="form-group"><label>Set-up:</label>
                     <select id="setup"><option>SSD</option><option>SAD</option></select>
                 </div>
@@ -54,30 +62,71 @@
                 <h3>(a) Pressure & Temperature</h3>
                 <div class="info-grid">
                     <div class="form-group"><label>T<sub>0</sub> [°C]:</label><input type="number" id="t0" value="20" step="any"></div>
-                    <div class="form-group"><label>P<sub>0</sub> [kPa]:</label><input type="number" id="p0" value="101.33" step="any"></div>
+                    <div class="form-group">
+                        <label>P<sub>0</sub>:</label>
+                        <div class="input-with-unit">
+                            <input type="number" id="p0" value="101.33" step="any">
+                            <select id="p0_unit"><option value="kPa">kPa</option><option value="mbar">mbar</option></select>
+                        </div>
+                    </div>
                     <div class="form-group"><label>Measured T [°C]:</label><input type="number" id="t_meas" step="any"></div>
-                    <div class="form-group"><label>Measured P [kPa]:</label><input type="number" id="p_meas" step="any"></div>
+                    <div class="form-group">
+                        <label>Measured P:</label>
+                        <div class="input-with-unit">
+                            <input type="number" id="p_meas" step="any">
+                            <select id="p_meas_unit"><option value="kPa">kPa</option><option value="mbar">mbar</option></select>
+                        </div>
+                    </div>
                 </div>
                 <p class="calc-result">k<sub>TP</sub> = <span id="kTP_result">1.0000</span></p>
             </div>
 
             <div class="subsection">
                 <h3>(b) Polarity Correction</h3>
-                <div class="info-grid">
-                    <div class="form-group"><label>M<sub>+</sub> (Positive):</label><input type="number" id="m_pos" step="any"></div>
-                    <div class="form-group"><label>M<sub>-</sub> (Negative):</label><input type="number" id="m_neg" step="any"></div>
-                    <div class="form-group"><label>M (Routine):</label><input type="number" id="m_routine" step="any"></div>
+                <div class="reading-group">
+                    <label>M<sub>+</sub> (Positive Readings):</label>
+                    <div class="reading-inputs">
+                        <input type="number" id="m_pos_1" step="any"><input type="number" id="m_pos_2" step="any"><input type="number" id="m_pos_3" step="any">
+                    </div>
+                    <span class="avg-display">Avg M<sub>+</sub>: <span id="m_pos_avg">0.000</span></span>
+                </div>
+                <div class="reading-group">
+                    <label>M<sub>-</sub> (Negative Readings):</label>
+                    <div class="reading-inputs">
+                        <input type="number" id="m_neg_1" step="any"><input type="number" id="m_neg_2" step="any"><input type="number" id="m_neg_3" step="any">
+                    </div>
+                    <span class="avg-display">Avg M<sub>-</sub>: <span id="m_neg_avg">0.000</span></span>
                 </div>
                 <p class="calc-result">k<sub>pol</sub> = <span id="kPol_result">1.0000</span></p>
             </div>
 
             <div class="subsection">
-                <h3>(c) Recombination Correction (Two-Voltage Method)</h3>
+                <h3>(c) Recombination Correction (Pulsed Beams)</h3>
                 <div class="info-grid">
                     <div class="form-group"><label>V<sub>1</sub> (Normal) [V]:</label><input type="number" id="v1" step="any"></div>
                     <div class="form-group"><label>V<sub>2</sub> (Reduced) [V]:</label><input type="number" id="v2" step="any"></div>
-                    <div class="form-group"><label>M<sub>1</sub> (at V<sub>1</sub>):</label><input type="number" id="m1" step="any"></div>
-                    <div class="form-group"><label>M<sub>2</sub> (at V<sub>2</sub>):</label><input type="number" id="m2" step="any"></div>
+                </div>
+                
+                <div class="reading-group">
+                    <label>M<sub>1</sub> (Readings at V<sub>1</sub>):</label>
+                    <div class="reading-inputs">
+                        <input type="number" id="m1_1" step="any"><input type="number" id="m1_2" step="any"><input type="number" id="m1_3" step="any">
+                    </div>
+                    <span class="avg-display">Avg M<sub>1</sub>: <span id="m1_avg">0.000</span></span>
+                </div>
+                <div class="reading-group">
+                    <label>M<sub>2</sub> (Readings at V<sub>2</sub>):</label>
+                    <div class="reading-inputs">
+                        <input type="number" id="m2_1" step="any"><input type="number" id="m2_2" step="any"><input type="number" id="m2_3" step="any">
+                    </div>
+                    <span class="avg-display">Avg M<sub>2</sub>: <span id="m2_avg">0.000</span></span>
+                </div>
+
+                <div class="coeff-display">
+                    <strong>Selected Coefficients (Ratio V<sub>1</sub>/V<sub>2</sub> = <span id="vRatioDisplay">--</span>):</strong><br>
+                    a<sub>0</sub>: <span id="a0_val">--</span> | 
+                    a<sub>1</sub>: <span id="a1_val">--</span> | 
+                    a<sub>2</sub>: <span id="a2_val">--</span>
                 </div>
                 <p class="calc-result">k<sub>s</sub> = <span id="kS_result">1.0000</span></p>
             </div>
@@ -92,8 +141,15 @@
 
         <section class="worksheet-section final-calc">
             <h2>4. Absorbed Dose to Water Determination</h2>
-            <div class="info-grid">
-                <div class="form-group"><label>Uncorrected Reading (M<sub>raw</sub>):</label><input type="number" id="m_raw" step="any"></div>
+            <div class="reading-group">
+                <label>Uncorrected Reading (M<sub>raw</sub> used for Dose):</label>
+                <div class="reading-inputs">
+                    <input type="number" id="m_raw_1" step="any"><input type="number" id="m_raw_2" step="any"><input type="number" id="m_raw_3" step="any">
+                </div>
+                <span class="avg-display">Avg M<sub>raw</sub>: <span id="m_raw_avg">0.000</span></span>
+            </div>
+
+            <div class="info-grid" style="margin-top: 15px;">
                 <div class="form-group"><label>Beam Quality (TPR<sub>20,10</sub>):</label><input type="number" id="tpr2010" step="any"></div>
                 <div class="form-group"><label>Beam Quality Factor (k<sub>Q</sub>):</label><input type="number" id="kq" step="any"></div>
             </div>
