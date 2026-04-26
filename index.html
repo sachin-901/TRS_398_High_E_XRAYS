@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRS 398 Worksheet: High Energy Photon Beams</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="toolbar">
+        <button id="downloadPdfBtn" class="btn">Download as PDF</button>
+    </div>
+
+    <div id="worksheet" class="container">
+        <header>
+            <h1>Absorbed Dose to Water: High Energy Photon Beams</h1>
+            <p>Based on IAEA TRS-398 (Chapter 6)</p>
+        </header>
+
+        <section class="info-grid">
+            <div class="form-group"><label>User:</label><input type="text" id="userName"></div>
+            <div class="form-group"><label>Date:</label><input type="date" id="date"></div>
+            <div class="form-group"><label>Therapy Unit:</label><input type="text" id="therapyUnit"></div>
+            <div class="form-group"><label>Nominal Energy (MV):</label><input type="text" id="nominalEnergy"></div>
+        </section>
+
+        <section class="worksheet-section">
+            <h2>1. Reference Conditions (Table 15)</h2>
+            <div class="info-grid">
+                <div class="form-group"><label>Phantom Material:</label><input type="text" value="Water" readonly></div>
+                <div class="form-group"><label>Set-up:</label>
+                    <select id="setup"><option>SSD</option><option>SAD</option></select>
+                </div>
+                <div class="form-group"><label>Ref Depth (Z<sub>ref</sub>) [g/cm²]:</label><input type="number" value="10" step="any" id="zref"></div>
+                <div class="form-group"><label>Field Size [cm x cm]:</label><input type="text" value="10 x 10" id="fieldSize"></div>
+            </div>
+        </section>
+
+        <section class="worksheet-section">
+            <h2>2. Dosimetry Equipment</h2>
+            <div class="info-grid">
+                <div class="form-group"><label>Chamber Model:</label><input type="text" id="chamberModel"></div>
+                <div class="form-group"><label>Serial No:</label><input type="text" id="chamberSerial"></div>
+                <div class="form-group"><label>N<sub>D,w</sub> [Gy/nC or Gy/rdg]:</label><input type="number" id="ndw" step="any"></div>
+                <div class="form-group"><label>Calibration Lab:</label><input type="text" id="calLab"></div>
+            </div>
+        </section>
+
+        <section class="worksheet-section">
+            <h2>3. Influence Quantities & Corrections</h2>
+            
+            <div class="subsection">
+                <h3>(a) Pressure & Temperature</h3>
+                <div class="info-grid">
+                    <div class="form-group"><label>T<sub>0</sub> [°C]:</label><input type="number" id="t0" value="20" step="any"></div>
+                    <div class="form-group"><label>P<sub>0</sub> [kPa]:</label><input type="number" id="p0" value="101.33" step="any"></div>
+                    <div class="form-group"><label>Measured T [°C]:</label><input type="number" id="t_meas" step="any"></div>
+                    <div class="form-group"><label>Measured P [kPa]:</label><input type="number" id="p_meas" step="any"></div>
+                </div>
+                <p class="calc-result">k<sub>TP</sub> = <span id="kTP_result">1.0000</span></p>
+            </div>
+
+            <div class="subsection">
+                <h3>(b) Polarity Correction</h3>
+                <div class="info-grid">
+                    <div class="form-group"><label>M<sub>+</sub> (Positive):</label><input type="number" id="m_pos" step="any"></div>
+                    <div class="form-group"><label>M<sub>-</sub> (Negative):</label><input type="number" id="m_neg" step="any"></div>
+                    <div class="form-group"><label>M (Routine):</label><input type="number" id="m_routine" step="any"></div>
+                </div>
+                <p class="calc-result">k<sub>pol</sub> = <span id="kPol_result">1.0000</span></p>
+            </div>
+
+            <div class="subsection">
+                <h3>(c) Recombination Correction (Two-Voltage Method)</h3>
+                <div class="info-grid">
+                    <div class="form-group"><label>V<sub>1</sub> (Normal) [V]:</label><input type="number" id="v1" step="any"></div>
+                    <div class="form-group"><label>V<sub>2</sub> (Reduced) [V]:</label><input type="number" id="v2" step="any"></div>
+                    <div class="form-group"><label>M<sub>1</sub> (at V<sub>1</sub>):</label><input type="number" id="m1" step="any"></div>
+                    <div class="form-group"><label>M<sub>2</sub> (at V<sub>2</sub>):</label><input type="number" id="m2" step="any"></div>
+                </div>
+                <p class="calc-result">k<sub>s</sub> = <span id="kS_result">1.0000</span></p>
+            </div>
+            
+            <div class="subsection">
+                <h3>(d) Additional Factors</h3>
+                <div class="info-grid">
+                    <div class="form-group"><label>Electrometer k<sub>elec</sub>:</label><input type="number" id="kelec" value="1.000" step="any"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="worksheet-section final-calc">
+            <h2>4. Absorbed Dose to Water Determination</h2>
+            <div class="info-grid">
+                <div class="form-group"><label>Uncorrected Reading (M<sub>raw</sub>):</label><input type="number" id="m_raw" step="any"></div>
+                <div class="form-group"><label>Beam Quality (TPR<sub>20,10</sub>):</label><input type="number" id="tpr2010" step="any"></div>
+                <div class="form-group"><label>Beam Quality Factor (k<sub>Q</sub>):</label><input type="number" id="kq" step="any"></div>
+            </div>
+            
+            <div class="summary-box">
+                <p><strong>Corrected Reading (M):</strong> <span id="m_corr_result">0.000</span></p>
+                <p class="formula">M = M<sub>raw</sub> &times; k<sub>TP</sub> &times; k<sub>elec</sub> &times; k<sub>pol</sub> &times; k<sub>s</sub></p>
+                <hr>
+                <p><strong>Absorbed Dose to Water (D<sub>w</sub>):</strong> <span id="dw_result" class="highlight">0.000</span> Gy</p>
+                <p class="formula">D<sub>w</sub> = M &times; N<sub>D,w</sub> &times; k<sub>Q</sub></p>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
