@@ -38,7 +38,10 @@
                     <input type="text" id="phantomOther" placeholder="Specify..." style="display:none; margin-top:5px;">
                 </div>
                 <div class="form-group"><label>Set-up:</label>
-                    <select id="setup"><option>SSD</option><option>SAD</option></select>
+                    <select id="setup">
+                        <option value="SSD">SSD</option>
+                        <option value="SAD">SAD</option>
+                    </select>
                 </div>
                 <div class="form-group"><label>Ref Depth (Z<sub>ref</sub>) [g/cm²]:</label><input type="number" value="10" step="any" id="zref"></div>
                 <div class="form-group"><label>Field Size [cm x cm]:</label><input type="text" value="10 x 10" id="fieldSize"></div>
@@ -84,14 +87,20 @@
             <div class="subsection">
                 <h3>(b) Polarity Correction</h3>
                 <div class="reading-group">
-                    <label>M<sub>+</sub> (Positive Readings):</label>
+                    <label>
+                        <input type="radio" name="routine_polarity" value="pos" checked> 
+                        M<sub>+</sub> (Positive Readings):
+                    </label>
                     <div class="reading-inputs">
                         <input type="number" id="m_pos_1" step="any"><input type="number" id="m_pos_2" step="any"><input type="number" id="m_pos_3" step="any">
                     </div>
                     <span class="avg-display">Avg M<sub>+</sub>: <span id="m_pos_avg">0.000</span></span>
                 </div>
                 <div class="reading-group">
-                    <label>M<sub>-</sub> (Negative Readings):</label>
+                    <label>
+                        <input type="radio" name="routine_polarity" value="neg"> 
+                        M<sub>-</sub> (Negative Readings):
+                    </label>
                     <div class="reading-inputs">
                         <input type="number" id="m_neg_1" step="any"><input type="number" id="m_neg_2" step="any"><input type="number" id="m_neg_3" step="any">
                     </div>
@@ -150,16 +159,26 @@
             </div>
 
             <div class="info-grid" style="margin-top: 15px;">
-                <div class="form-group"><label>Beam Quality (TPR<sub>20,10</sub>):</label><input type="number" id="tpr2010" step="any"></div>
                 <div class="form-group"><label>Beam Quality Factor (k<sub>Q</sub>):</label><input type="number" id="kq" step="any"></div>
+                <div class="form-group">
+                    <label id="depthDoseLabel">PDD (%) at z<sub>ref</sub>:</label>
+                    <input type="number" id="depthDoseVal" step="any">
+                </div>
+                <div class="form-group"><label>Expected Reference Dose (Gy):</label><input type="number" id="refDose" step="any"></div>
             </div>
             
             <div class="summary-box">
                 <p><strong>Corrected Reading (M):</strong> <span id="m_corr_result">0.000</span></p>
                 <p class="formula">M = M<sub>raw</sub> &times; k<sub>TP</sub> &times; k<sub>elec</sub> &times; k<sub>pol</sub> &times; k<sub>s</sub></p>
                 <hr>
-                <p><strong>Absorbed Dose to Water (D<sub>w</sub>):</strong> <span id="dw_result" class="highlight">0.000</span> Gy</p>
+                <p><strong>Dose at z<sub>ref</sub> (D<sub>w</sub>):</strong> <span id="dw_result">0.000</span> Gy</p>
                 <p class="formula">D<sub>w</sub> = M &times; N<sub>D,w</sub> &times; k<sub>Q</sub></p>
+                <hr>
+                <p><strong>Dose at z<sub>max</sub> (D<sub>w</sub>(z<sub>max</sub>)):</strong> <span id="dw_zmax_result" class="highlight">0.000</span> Gy</p>
+                <p class="formula" id="zmaxFormula">D<sub>w</sub>(z<sub>max</sub>) = (D<sub>w</sub> / PDD) &times; 100</p>
+                <hr>
+                <p><strong>Variation from Reference:</strong> <span id="variation_result" style="font-weight: bold;">0.00</span> %</p>
+                <p class="formula">Variation = ((D<sub>w</sub>(z<sub>max</sub>) - RefDose) / RefDose) &times; 100</p>
             </div>
         </section>
     </div>
