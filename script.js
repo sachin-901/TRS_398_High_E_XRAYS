@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSetupLabels() {
         if (setupSelect.value === 'SSD') {
             depthDoseLabel.innerHTML = 'PDD (%) at z<sub>ref</sub>:';
-            zmaxFormula.innerHTML = 'D<sub>w</sub>(z<sub>max</sub>) = (D<sub>w</sub> / PDD) &times; 100';
+            zmaxFormula.innerHTML = 'D<sub>w</sub>(z<sub>max</sub>)/MU = (D<sub>w</sub>(z<sub>ref</sub>)/MU / PDD) &times; 100';
         } else {
             depthDoseLabel.innerHTML = 'TPR at z<sub>ref</sub>:';
-            zmaxFormula.innerHTML = 'D<sub>w</sub>(z<sub>max</sub>) = D<sub>w</sub> / TPR';
+            zmaxFormula.innerHTML = 'D<sub>w</sub>(z<sub>max</sub>)/MU = D<sub>w</sub>(z<sub>ref</sub>)/MU / TPR';
         }
         calculateDose();
     }
@@ -24,7 +24,38 @@ document.addEventListener('DOMContentLoaded', () => {
         phantomOther.style.display = phantomSelect.value === 'Other' ? 'block' : 'none';
     });
 
-    // 3. Attach calculation triggers to all inputs
+    // 3. Bi-Directional Sync: Routine M <--> M1
+    const mPosInputs = [document.getElementById('m_pos_1'), document.getElementById('m_pos_2'), document.getElementById('m_pos_3')];
+    const mNegInputs = [document.getElementById('m_neg_1'), document.getElementById('m_neg_2'), document.getElementById('m_neg_3')];
+    const m1Inputs = [document.getElementById('m1_1'), document.getElementById('m1_2'), document.getElementById('m1_3')];
+    const routineRadios = document.getElementsByName('routine_polarity');
+
+    function syncRoutineToM1() {
+        let activeInputs = document.querySelector('input[name="routine_polarity"]:checked').value === 'pos' ? mPosInputs : mNegInputs;
+        for(let i=0; i<3; i++){
+            m1Inputs[i].value = activeInputs[i].value;
+        }
+        calculateDose();
+    }
+
+    function syncM1ToRoutine() {
+        let activeInputs = document.querySelector('input[name="routine_polarity"]:checked').value === 'pos' ? mPosInputs : mNegInputs;
+        for(let i=0; i<3; i++){
+            activeInputs[i].value = m1Inputs[i].value;
+        }
+        calculateDose();
+    }
+
+    mPosInputs.forEach(input => input.addEventListener('input', () => {
+        if(document.querySelector('input[name="routine_polarity"]:checked').value === 'pos') syncRoutineToM1();
+    }));
+    mNegInputs.forEach(input => input.addEventListener('input', () => {
+        if(document.querySelector('input[name="routine_polarity"]:checked').value === 'neg') syncRoutineToM1();
+    }));
+    m1Inputs.forEach(input => input.addEventListener('input', syncM1ToRoutine));
+    routineRadios.forEach(radio => radio.addEventListener('change', syncRoutineToM1));
+
+    // 4. Attach calculation triggers to all other inputs
     const inputs = document.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('input', calculateDose);
@@ -85,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let m_pos_avg = getAverage('m_pos');
         let m_neg_avg = getAverage('m_neg');
         
-        // Determine Routine M based on radio button selection
         const routineSelected = document.querySelector('input[name="routine_polarity"]:checked').value;
         let m_routine_avg = (routineSelected === 'pos') ? m_pos_avg : m_neg_avg;
 
@@ -146,33 +176,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- 4. Final Dose (Dw) ---
         const kElec = getVal('kelec') || 1.0;
-        let m_raw_avg = getAverage('m_raw');
         const ndw = getVal('ndw');
         const kq = getVal('kq');
         const depthDoseVal = getVal('depthDoseVal');
+        const numMu = getVal('num_mu');
         const refDose = getVal('refDose');
+        const refDoseUnit = document.getElementById('refDoseUnit').value;
 
-        let dw = null;
-        let dw_zmax = null;
+        let dw_per_mu = null;
+        let dw_zmax_per_mu = null;
+        let measuredValForVariation = null;
 
-        if (m_raw_avg !== null && kS !== null) { 
-            const m_corr = m_raw_avg * kTP * kElec * kPol * kS;
+        // Reset alternate display
+        document.getElementById('dw_zmax_alt_container').style.display = 'none';
+
+        if (m_routine_avg !== null && kS !== null && numMu !== null && numMu !== 0) { 
+            const m_corr = m_routine_avg * kTP * kElec * kPol * kS;
             document.getElementById('m_corr_result').textContent = m_corr.toFixed(4);
 
             if (ndw !== null && kq !== null) {
-                dw = m_corr * ndw * kq;
-                document.getElementById('dw_result').textContent = dw.toFixed(4);
+                // Total absolute dose in cGy
+                let total_dw_cGy = m_corr * ndw * kq;
                 
-                // Calculate Dw at zmax
+                // Dose per MU (cGy/MU)
+                dw_per_mu = total_dw_cGy / numMu;
+                document.getElementById('dw_result').textContent = dw_per_mu.toFixed(4);
+                
+                // Calculate Dw at zmax per MU
                 if (depthDoseVal !== null && depthDoseVal !== 0) {
                     if (setupSelect.value === 'SSD') {
-                        // depthDoseVal is treated as a percentage (PDD)
-                        dw_zmax = (dw / depthDoseVal) * 100;
+                        dw_zmax_per_mu = (dw_per_mu / depthDoseVal) * 100;
                     } else {
-                        // depthDoseVal is treated as a ratio (TPR)
-                        dw_zmax = dw / depthDoseVal;
+                        dw_zmax_per_mu = dw_per_mu / depthDoseVal;
                     }
-                    document.getElementById('dw_zmax_result').textContent = dw_zmax.toFixed(4);
+                    
+                    document.getElementById('dw_zmax_result').textContent = dw_zmax_per_mu.toFixed(4);
+                    measuredValForVariation = dw_zmax_per_mu; // Default comparison in cGy/MU
+
+                    // If user wants reference dose in MU/cGy, show measured MU/cGy as well
+                    if (refDoseUnit === 'MU/cGy') {
+                        let mu_per_cGy = 1 / dw_zmax_per_mu;
+                        measuredValForVariation = mu_per_cGy;
+                        document.getElementById('dw_zmax_alt_result').textContent = mu_per_cGy.toFixed(4);
+                        document.getElementById('dw_zmax_alt_container').style.display = 'block';
+                    }
                 } else {
                     document.getElementById('dw_zmax_result').textContent = "---";
                 }
@@ -187,16 +234,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- 5. Percentage Variation ---
-        if (dw_zmax !== null && refDose !== null && refDose !== 0) {
-            const variation = ((dw_zmax - refDose) / refDose) * 100;
+        if (measuredValForVariation !== null && refDose !== null && refDose !== 0) {
+            const variation = ((measuredValForVariation - refDose) / refDose) * 100;
             const variationEl = document.getElementById('variation_result');
             variationEl.textContent = variation.toFixed(2);
             
-            // Optional: Color code variation (e.g. red if > 2%)
             if (Math.abs(variation) > 2.0) {
-                variationEl.style.color = '#d9534f'; // Red
+                variationEl.style.color = '#d9534f'; 
             } else {
-                variationEl.style.color = '#5cb85c'; // Green
+                variationEl.style.color = '#5cb85c'; 
             }
         } else {
             document.getElementById('variation_result').textContent = "---";
