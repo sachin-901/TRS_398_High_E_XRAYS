@@ -8,10 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-    <div class="toolbar">
-        <button id="downloadPdfBtn" class="btn">Download as PDF</button>
-    </div>
-
     <div id="worksheet" class="container">
         <header>
             <h1>Absorbed Dose to Water: High Energy Photon Beams</h1>
@@ -22,7 +18,7 @@
             <div class="form-group"><label>User:</label><input type="text" id="userName"></div>
             <div class="form-group"><label>Date:</label><input type="date" id="date"></div>
             <div class="form-group"><label>Therapy Unit:</label><input type="text" id="therapyUnit"></div>
-            <div class="form-group"><label>Nominal Energy (MV):</label><input type="text" id="nominalEnergy"></div>
+            <div class="form-group"><label>Nominal Energy (MV):</label><input type="number" step="0.01" id="nominalEnergy"></div>
         </section>
 
         <section class="worksheet-section">
@@ -43,8 +39,9 @@
                         <option value="SAD">SAD</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Ref Depth (Z<sub>ref</sub>) [g/cm²]:</label><input type="number" value="10" step="any" id="zref"></div>
+                <div class="form-group"><label>Ref Depth (Z<sub>ref</sub>) [g/cm²]:</label><input type="number" value="10" step="0.01" id="zref"></div>
                 <div class="form-group"><label>Field Size [cm x cm]:</label><input type="text" value="10 x 10" id="fieldSize"></div>
+                <div class="form-group"><label>No. of MU:</label><input type="number" value="100" step="0.01" id="num_mu"></div>
             </div>
         </section>
 
@@ -53,7 +50,7 @@
             <div class="info-grid">
                 <div class="form-group"><label>Chamber Model:</label><input type="text" id="chamberModel"></div>
                 <div class="form-group"><label>Serial No:</label><input type="text" id="chamberSerial"></div>
-                <div class="form-group"><label>N<sub>D,w</sub> [Gy/nC or Gy/rdg]:</label><input type="number" id="ndw" step="any"></div>
+                <div class="form-group"><label>N<sub>D,w</sub> [cGy/nC]:</label><input type="number" step="0.01" id="ndw"></div>
                 <div class="form-group"><label>Calibration Lab:</label><input type="text" id="calLab"></div>
             </div>
         </section>
@@ -64,20 +61,26 @@
             <div class="subsection">
                 <h3>(a) Pressure & Temperature</h3>
                 <div class="info-grid">
-                    <div class="form-group"><label>T<sub>0</sub> [°C]:</label><input type="number" id="t0" value="20" step="any"></div>
+                    <div class="form-group"><label>T<sub>0</sub> [°C]:</label><input type="number" id="t0" value="20" step="0.01"></div>
                     <div class="form-group">
                         <label>P<sub>0</sub>:</label>
                         <div class="input-with-unit">
-                            <input type="number" id="p0" value="101.33" step="any">
-                            <select id="p0_unit"><option value="kPa">kPa</option><option value="mbar">mbar</option></select>
+                            <input type="number" id="p0" value="1013.3" step="0.01">
+                            <select id="p0_unit">
+                                <option value="mbar" selected>mbar</option>
+                                <option value="kPa">kPa</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="form-group"><label>Measured T [°C]:</label><input type="number" id="t_meas" step="any"></div>
+                    <div class="form-group"><label>Measured T [°C]:</label><input type="number" id="t_meas" step="0.01"></div>
                     <div class="form-group">
                         <label>Measured P:</label>
                         <div class="input-with-unit">
-                            <input type="number" id="p_meas" step="any">
-                            <select id="p_meas_unit"><option value="kPa">kPa</option><option value="mbar">mbar</option></select>
+                            <input type="number" id="p_meas" step="0.01">
+                            <select id="p_meas_unit">
+                                <option value="mbar" selected>mbar</option>
+                                <option value="kPa">kPa</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -86,13 +89,14 @@
 
             <div class="subsection">
                 <h3>(b) Polarity Correction</h3>
+                <p class="instruction-text"><em>Select the radio button next to the polarity you use for routine measurements. This will automatically sync with M<sub>1</sub> below.</em></p>
                 <div class="reading-group">
                     <label>
                         <input type="radio" name="routine_polarity" value="pos" checked> 
                         M<sub>+</sub> (Positive Readings):
                     </label>
                     <div class="reading-inputs">
-                        <input type="number" id="m_pos_1" step="any"><input type="number" id="m_pos_2" step="any"><input type="number" id="m_pos_3" step="any">
+                        <input type="number" id="m_pos_1" step="0.01"><input type="number" id="m_pos_2" step="0.01"><input type="number" id="m_pos_3" step="0.01">
                     </div>
                     <span class="avg-display">Avg M<sub>+</sub>: <span id="m_pos_avg">0.000</span></span>
                 </div>
@@ -102,7 +106,7 @@
                         M<sub>-</sub> (Negative Readings):
                     </label>
                     <div class="reading-inputs">
-                        <input type="number" id="m_neg_1" step="any"><input type="number" id="m_neg_2" step="any"><input type="number" id="m_neg_3" step="any">
+                        <input type="number" id="m_neg_1" step="0.01"><input type="number" id="m_neg_2" step="0.01"><input type="number" id="m_neg_3" step="0.01">
                     </div>
                     <span class="avg-display">Avg M<sub>-</sub>: <span id="m_neg_avg">0.000</span></span>
                 </div>
@@ -112,21 +116,21 @@
             <div class="subsection">
                 <h3>(c) Recombination Correction (Pulsed Beams)</h3>
                 <div class="info-grid">
-                    <div class="form-group"><label>V<sub>1</sub> (Normal) [V]:</label><input type="number" id="v1" step="any"></div>
-                    <div class="form-group"><label>V<sub>2</sub> (Reduced) [V]:</label><input type="number" id="v2" step="any"></div>
+                    <div class="form-group"><label>V<sub>1</sub> (Normal) [V]:</label><input type="number" id="v1" step="0.01"></div>
+                    <div class="form-group"><label>V<sub>2</sub> (Reduced) [V]:</label><input type="number" id="v2" step="0.01"></div>
                 </div>
                 
                 <div class="reading-group">
                     <label>M<sub>1</sub> (Readings at V<sub>1</sub>):</label>
                     <div class="reading-inputs">
-                        <input type="number" id="m1_1" step="any"><input type="number" id="m1_2" step="any"><input type="number" id="m1_3" step="any">
+                        <input type="number" id="m1_1" step="0.01"><input type="number" id="m1_2" step="0.01"><input type="number" id="m1_3" step="0.01">
                     </div>
                     <span class="avg-display">Avg M<sub>1</sub>: <span id="m1_avg">0.000</span></span>
                 </div>
                 <div class="reading-group">
                     <label>M<sub>2</sub> (Readings at V<sub>2</sub>):</label>
                     <div class="reading-inputs">
-                        <input type="number" id="m2_1" step="any"><input type="number" id="m2_2" step="any"><input type="number" id="m2_3" step="any">
+                        <input type="number" id="m2_1" step="0.01"><input type="number" id="m2_2" step="0.01"><input type="number" id="m2_3" step="0.01">
                     </div>
                     <span class="avg-display">Avg M<sub>2</sub>: <span id="m2_avg">0.000</span></span>
                 </div>
@@ -143,44 +147,52 @@
             <div class="subsection">
                 <h3>(d) Additional Factors</h3>
                 <div class="info-grid">
-                    <div class="form-group"><label>Electrometer k<sub>elec</sub>:</label><input type="number" id="kelec" value="1.000" step="any"></div>
+                    <div class="form-group"><label>Electrometer k<sub>elec</sub>:</label><input type="number" id="kelec" value="1.000" step="0.01"></div>
                 </div>
             </div>
         </section>
 
         <section class="worksheet-section final-calc">
             <h2>4. Absorbed Dose to Water Determination</h2>
-            <div class="reading-group">
-                <label>Uncorrected Reading (M<sub>raw</sub> used for Dose):</label>
-                <div class="reading-inputs">
-                    <input type="number" id="m_raw_1" step="any"><input type="number" id="m_raw_2" step="any"><input type="number" id="m_raw_3" step="any">
-                </div>
-                <span class="avg-display">Avg M<sub>raw</sub>: <span id="m_raw_avg">0.000</span></span>
-            </div>
 
             <div class="info-grid" style="margin-top: 15px;">
-                <div class="form-group"><label>Beam Quality Factor (k<sub>Q</sub>):</label><input type="number" id="kq" step="any"></div>
+                <div class="form-group"><label>Beam Quality Factor (k<sub>Q</sub>):</label><input type="number" id="kq" step="0.01"></div>
                 <div class="form-group">
                     <label id="depthDoseLabel">PDD (%) at z<sub>ref</sub>:</label>
-                    <input type="number" id="depthDoseVal" step="any">
+                    <input type="number" id="depthDoseVal" step="0.01">
                 </div>
-                <div class="form-group"><label>Expected Reference Dose (Gy):</label><input type="number" id="refDose" step="any"></div>
+                <div class="form-group">
+                    <label>Reference Dose:</label>
+                    <div class="input-with-unit">
+                        <input type="number" id="refDose" step="0.01">
+                        <select id="refDoseUnit">
+                            <option value="cGy/MU" selected>cGy/MU</option>
+                            <option value="MU/cGy">MU/cGy</option>
+                        </select>
+                    </div>
+                </div>
             </div>
             
             <div class="summary-box">
-                <p><strong>Corrected Reading (M):</strong> <span id="m_corr_result">0.000</span></p>
-                <p class="formula">M = M<sub>raw</sub> &times; k<sub>TP</sub> &times; k<sub>elec</sub> &times; k<sub>pol</sub> &times; k<sub>s</sub></p>
+                <p><strong>Corrected Routine Reading (M):</strong> <span id="m_corr_result">0.000</span></p>
+                <p class="formula">M = M<sub>routine_avg</sub> &times; k<sub>TP</sub> &times; k<sub>elec</sub> &times; k<sub>pol</sub> &times; k<sub>s</sub></p>
                 <hr>
-                <p><strong>Dose at z<sub>ref</sub> (D<sub>w</sub>):</strong> <span id="dw_result">0.000</span> Gy</p>
-                <p class="formula">D<sub>w</sub> = M &times; N<sub>D,w</sub> &times; k<sub>Q</sub></p>
+                <p><strong>Dose at z<sub>ref</sub>:</strong> <span id="dw_result">0.000</span> cGy/MU</p>
+                <p class="formula">D<sub>w</sub>(z<sub>ref</sub>)/MU = (M &times; N<sub>D,w</sub> &times; k<sub>Q</sub>) / MU</p>
                 <hr>
-                <p><strong>Dose at z<sub>max</sub> (D<sub>w</sub>(z<sub>max</sub>)):</strong> <span id="dw_zmax_result" class="highlight">0.000</span> Gy</p>
-                <p class="formula" id="zmaxFormula">D<sub>w</sub>(z<sub>max</sub>) = (D<sub>w</sub> / PDD) &times; 100</p>
+                <p><strong>Dose at z<sub>max</sub>:</strong> <span id="dw_zmax_result" class="highlight">0.000</span> cGy/MU</p>
+                <p id="dw_zmax_alt_container" style="display:none; color: #0056b3; font-weight:bold;">Or: <span id="dw_zmax_alt_result">0.000</span> MU/cGy</p>
+                <p class="formula" id="zmaxFormula">D<sub>w</sub>(z<sub>max</sub>)/MU = (D<sub>w</sub>(z<sub>ref</sub>)/MU / PDD) &times; 100</p>
                 <hr>
                 <p><strong>Variation from Reference:</strong> <span id="variation_result" style="font-weight: bold;">0.00</span> %</p>
-                <p class="formula">Variation = ((D<sub>w</sub>(z<sub>max</sub>) - RefDose) / RefDose) &times; 100</p>
+                <p class="formula">Variation = ((Measured - RefDose) / RefDose) &times; 100</p>
             </div>
         </section>
+
+        <!-- Download Button relocated to the bottom -->
+        <div class="toolbar bottom-toolbar">
+            <button id="downloadPdfBtn" class="btn">Download as PDF</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
