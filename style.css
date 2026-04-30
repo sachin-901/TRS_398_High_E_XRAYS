@@ -68,7 +68,12 @@ header p { margin: 0; color: #666; }
 
 .form-group { display: flex; flex-direction: column; }
 .form-group label { font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
-.form-group input, .form-group select { padding: 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 14px; }
+.form-group input[type="text"], .form-group input[type="number"], .form-group input[type="date"], .form-group select { 
+    padding: 8px; 
+    border: 1px solid #ccc; 
+    border-radius: 3px; 
+    font-size: 14px; 
+}
 
 .input-with-unit {
     display: flex;
@@ -93,7 +98,10 @@ header p { margin: 0; color: #666; }
     font-size: 13px;
     font-weight: bold;
     color: #555;
-    min-width: 180px;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 .reading-inputs {
     display: flex;
@@ -149,7 +157,7 @@ header p { margin: 0; color: #666; }
     .container { box-shadow: none; border: none; padding: 0; }
     
     /* Remove ALL borders and backgrounds for inputs/selects on print */
-    input, select { 
+    input[type="text"], input[type="number"], input[type="date"], select { 
         border: none !important; 
         background: transparent !important; 
         border-radius: 0;
@@ -158,6 +166,9 @@ header p { margin: 0; color: #666; }
         -moz-appearance: none;
         appearance: none;
     }
+    
+    /* Hide radio buttons but keep text on print */
+    input[type="radio"] { display: none; }
     
     .reading-group { border: none; background: transparent; padding: 5px 0; }
     .calc-result, .summary-box, .coeff-display { background: transparent; border: 1px solid #ccc; }
