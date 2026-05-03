@@ -58,8 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('change', calculateAllDoses);
     });
 
-    // Reference Dose Unit switch
-    document.getElementById('refDoseUnit').addEventListener('change', calculateAllDoses);
+    // Reference Dose Unit switch updates table headers
+    document.getElementById('refDoseUnit').addEventListener('change', () => {
+        const unit = document.getElementById('refDoseUnit').value;
+        document.getElementById('th-ref-unit').textContent = `[${unit}]`;
+        document.getElementById('th-dzmax-unit').textContent = `[${unit}]`;
+        calculateAllDoses();
+    });
 
     // Helper: Safely parse floats
     function getVal(id) {
@@ -194,16 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let m_corr = null;
             if (mraw_avg !== null && globalFactor !== null) {
                 m_corr = mraw_avg * globalFactor;
-                row.querySelector('.out-mcorr').textContent = m_corr.toFixed(4);
-            } else {
-                row.querySelector('.out-mcorr').textContent = "---";
             }
 
             // Dose calculations
             let dw_zref = null, dw_zmax = null, comparison_val = null;
             if (m_corr !== null && ndw !== null && kq !== null && numMu !== null && numMu !== 0) {
                 dw_zref = (m_corr * ndw * kq) / numMu;
-                row.querySelector('.out-dzref').textContent = dw_zref.toFixed(4);
 
                 if (pddTpr !== null && pddTpr !== 0) {
                     if (document.getElementById('setup').value === 'SSD') {
@@ -212,19 +213,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         dw_zmax = dw_zref / pddTpr;
                     }
 
-                    // Handle display units based on Reference Dose Unit selection
+                    // Handle display units based on Reference Dose Unit selection strictly as requested
                     if (refDoseUnit === 'cGy/MU') {
                         comparison_val = dw_zmax;
-                        row.querySelector('.out-dzmax').innerHTML = dw_zmax.toFixed(4);
+                        row.querySelector('.out-dzmax').textContent = dw_zmax.toFixed(4);
                     } else { // MU/cGy
                         comparison_val = 1 / dw_zmax;
-                        row.querySelector('.out-dzmax').innerHTML = dw_zmax.toFixed(4) + "<br><span style='font-size:10px; color:#0056b3;'>(" + comparison_val.toFixed(4) + ")</span>";
+                        row.querySelector('.out-dzmax').textContent = comparison_val.toFixed(4);
                     }
                 } else {
                     row.querySelector('.out-dzmax').textContent = "---";
                 }
             } else {
-                row.querySelector('.out-dzref').textContent = "---";
                 row.querySelector('.out-dzmax').textContent = "---";
             }
 
@@ -245,8 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function addEnergyRow() {
         const tbody = document.querySelector('#doseTable tbody');
         const tr = document.createElement('tr');
+        // We only render outputs for Dzmax and Variation now.
         tr.innerHTML = `
-            <td><input type="number" step="0.01" class="row-input inp-energy"></td>
+            <td><input type="number" step="1" class="row-input inp-energy"></td>
             <td>
                 <div class="mraw-inputs">
                     <input type="number" step="0.01" class="row-input inp-mraw1">
@@ -258,8 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><input type="number" step="0.01" class="row-input inp-kq"></td>
             <td><input type="number" step="0.01" class="row-input inp-pdd"></td>
             <td><input type="number" step="0.01" class="row-input inp-ref"></td>
-            <td class="td-result out-mcorr">---</td>
-            <td class="td-result out-dzref">---</td>
             <td class="td-result out-dzmax">---</td>
             <td class="td-result out-var">---</td>
             <td class="no-print"><button class="remove-btn">X</button></td>
