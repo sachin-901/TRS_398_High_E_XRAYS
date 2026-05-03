@@ -11,7 +11,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1050px;
     margin: 0 auto;
     background: #fff;
     padding: 40px;
@@ -84,12 +84,9 @@ header p { margin: 0; color: #666; }
     font-size: 14px; 
 }
 
-.input-with-unit {
-    display: flex;
-    gap: 5px;
-}
+.input-with-unit { display: flex; gap: 5px; }
 .input-with-unit input { flex: 1; }
-.input-with-unit select { width: 95px; } /* Slightly wider for cGy/MU */
+.input-with-unit select { width: 95px; } 
 
 /* 3-Reading Input Styling */
 .reading-group {
@@ -113,10 +110,7 @@ header p { margin: 0; color: #666; }
     gap: 5px;
     cursor: pointer;
 }
-.reading-inputs {
-    display: flex;
-    gap: 5px;
-}
+.reading-inputs { display: flex; gap: 5px; }
 .reading-inputs input {
     width: 80px;
     padding: 6px;
@@ -149,24 +143,51 @@ header p { margin: 0; color: #666; }
     text-align: right;
 }
 
+/* Table styling */
+.table-container { width: 100%; overflow-x: auto; }
+.dose-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.dose-table th, .dose-table td {
+    border: 1px solid #ccc;
+    padding: 6px 4px;
+    text-align: center;
+    vertical-align: middle;
+}
+.dose-table th { background: #eef2f5; color: #0056b3; }
+.dose-table input {
+    width: 60px;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 12px;
+}
+.mraw-inputs { display: flex; gap: 3px; justify-content: center; margin-bottom: 4px; }
+.mraw-inputs input { width: 55px; }
+.mraw-avg-display { font-weight: bold; color: #0056b3; font-size: 12px; }
+.td-result { font-weight: bold; color: #333; }
+.remove-btn {
+    background: #d9534f; color: #fff; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer;
+}
+.remove-btn:hover { background: #c9302c; }
+
 .summary-box {
     background-color: #eef2f5;
-    padding: 20px;
+    padding: 15px;
     border-radius: 5px;
     border: 1px solid #c8d9e6;
-    margin-top: 20px;
 }
-.summary-box p { font-size: 18px; margin: 10px 0; }
-.summary-box .formula { font-size: 13px; color: #666; font-family: monospace; margin-top: 0; }
-.highlight { font-weight: bold; color: #d9534f; font-size: 22px; }
+.summary-box .formula { font-size: 13px; color: #555; font-family: monospace; margin: 4px 0; }
 
 /* Print Specific Rules for Clean PDF Generation */
 @media print {
     body { background-color: #fff; }
-    .toolbar { display: none !important; }
-    .container { box-shadow: none; border: none; padding: 0; }
+    .no-print { display: none !important; }
+    .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
     
-    /* Remove ALL borders and backgrounds for inputs/selects on print */
     input[type="text"], input[type="number"], input[type="date"], select { 
         border: none !important; 
         background: transparent !important; 
@@ -176,10 +197,11 @@ header p { margin: 0; color: #666; }
         -moz-appearance: none;
         appearance: none;
     }
-    
-    /* Hide radio buttons but keep text on print */
     input[type="radio"] { display: none; }
     
     .reading-group { border: none; background: transparent; padding: 5px 0; }
     .calc-result, .summary-box, .coeff-display { background: transparent; border: 1px solid #ccc; }
+    
+    .dose-table input { width: auto; font-size: 13px; }
+    .mraw-inputs input { width: 45px; }
 }
