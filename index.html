@@ -18,7 +18,6 @@
             <div class="form-group"><label>User:</label><input type="text" id="userName"></div>
             <div class="form-group"><label>Date:</label><input type="date" id="date"></div>
             <div class="form-group"><label>Therapy Unit:</label><input type="text" id="therapyUnit"></div>
-            <div class="form-group"><label>Nominal Energy (MV):</label><input type="number" step="0.01" id="nominalEnergy"></div>
         </section>
 
         <section class="worksheet-section">
@@ -153,43 +152,54 @@
         </section>
 
         <section class="worksheet-section final-calc">
-            <h2>4. Absorbed Dose to Water Determination</h2>
-
-            <div class="info-grid" style="margin-top: 15px;">
-                <div class="form-group"><label>Beam Quality Factor (k<sub>Q</sub>):</label><input type="number" id="kq" step="0.01"></div>
-                <div class="form-group">
-                    <label id="depthDoseLabel">PDD (%) at z<sub>ref</sub>:</label>
-                    <input type="number" id="depthDoseVal" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label>Reference Dose:</label>
-                    <div class="input-with-unit">
-                        <input type="number" id="refDose" step="0.01">
-                        <select id="refDoseUnit">
-                            <option value="cGy/MU" selected>cGy/MU</option>
-                            <option value="MU/cGy">MU/cGy</option>
-                        </select>
-                    </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin-bottom: 0;">4. Absorbed Dose to Water Determination</h2>
+                <div class="input-with-unit" style="align-items: center; background: #eef2f5; padding: 5px 10px; border-radius: 4px;">
+                    <label style="font-size: 13px; font-weight: bold; margin-right: 5px; color: #0056b3;">Reference Unit:</label>
+                    <select id="refDoseUnit" style="padding: 4px; border: 1px solid #ccc; font-size: 12px; height: 30px;">
+                        <option value="cGy/MU" selected>cGy/MU</option>
+                        <option value="MU/cGy">MU/cGy</option>
+                    </select>
                 </div>
             </div>
+
+            <p class="instruction-text"><em>Enter your M<sub>raw</sub> readings for each energy here. Global corrections (k<sub>TP</sub>, k<sub>pol</sub>, k<sub>s</sub>, k<sub>elec</sub>) are applied to M<sub>raw</sub> automatically.</em></p>
+
+            <div class="table-container">
+                <table class="dose-table" id="doseTable">
+                    <thead>
+                        <tr>
+                            <th>Energy<br>(MV)</th>
+                            <th>M<sub>raw</sub> Readings (1, 2, 3)<br><span style="font-size: 11px; font-weight:normal;">and Avg M<sub>raw</sub></span></th>
+                            <th>k<sub>Q</sub></th>
+                            <th id="th-pdd">PDD (%)</th>
+                            <th>Ref Dose</th>
+                            <th>M<sub>corr</sub></th>
+                            <th>D<sub>w</sub>(z<sub>ref</sub>)<br><span style="font-size: 10px; font-weight:normal;">[cGy/MU]</span></th>
+                            <th>D<sub>w</sub>(z<sub>max</sub>)<br><span style="font-size: 10px; font-weight:normal;">[See Ref Unit]</span></th>
+                            <th>Var<br>(%)</th>
+                            <th class="no-print">Act</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows are added dynamically here -->
+                    </tbody>
+                </table>
+            </div>
             
-            <div class="summary-box">
-                <p><strong>Corrected Routine Reading (M):</strong> <span id="m_corr_result">0.000</span></p>
-                <p class="formula">M = M<sub>routine_avg</sub> &times; k<sub>TP</sub> &times; k<sub>elec</sub> &times; k<sub>pol</sub> &times; k<sub>s</sub></p>
-                <hr>
-                <p><strong>Dose at z<sub>ref</sub>:</strong> <span id="dw_result">0.000</span> cGy/MU</p>
-                <p class="formula">D<sub>w</sub>(z<sub>ref</sub>)/MU = (M &times; N<sub>D,w</sub> &times; k<sub>Q</sub>) / MU</p>
-                <hr>
-                <p><strong>Dose at z<sub>max</sub>:</strong> <span id="dw_zmax_result" class="highlight">0.000</span> cGy/MU</p>
-                <p id="dw_zmax_alt_container" style="display:none; color: #0056b3; font-weight:bold;">Or: <span id="dw_zmax_alt_result">0.000</span> MU/cGy</p>
-                <p class="formula" id="zmaxFormula">D<sub>w</sub>(z<sub>max</sub>)/MU = (D<sub>w</sub>(z<sub>ref</sub>)/MU / PDD) &times; 100</p>
-                <hr>
-                <p><strong>Variation from Reference:</strong> <span id="variation_result" style="font-weight: bold;">0.00</span> %</p>
-                <p class="formula">Variation = ((Measured - RefDose) / RefDose) &times; 100</p>
+            <div class="no-print" style="margin-top: 10px;">
+                <button id="addRowBtn" class="btn" style="background-color: #28a745; font-size: 14px; padding: 8px 16px;">+ Add Energy Row</button>
+            </div>
+            
+            <div class="summary-box" style="margin-top: 20px;">
+                <p class="formula"><strong>M<sub>corr</sub></strong> = Avg M<sub>raw</sub> &times; k<sub>TP</sub> &times; k<sub>elec</sub> &times; k<sub>pol</sub> &times; k<sub>s</sub></p>
+                <p class="formula"><strong>D<sub>w</sub>(z<sub>ref</sub>)</strong> = (M<sub>corr</sub> &times; N<sub>D,w</sub> &times; k<sub>Q</sub>) / MU</p>
+                <p class="formula"><strong>D<sub>w</sub>(z<sub>max</sub>)</strong> = D<sub>w</sub>(z<sub>ref</sub>) extrapolated to z<sub>max</sub> using PDD/TPR</p>
+                <p class="formula"><strong>Variation</strong> = ((Measured - RefDose) / RefDose) &times; 100</p>
             </div>
         </section>
 
-        <!-- Download Button relocated to the bottom -->
+        <!-- Download Button -->
         <div class="toolbar bottom-toolbar">
             <button id="downloadPdfBtn" class="btn">Download as PDF</button>
         </div>
